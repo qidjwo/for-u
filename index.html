@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To. 시은</title>
+  <!-- 구글 웹폰트 (본문용 고딕 & 감성 메시지용 부드러운 명조) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Pretendard:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      /* 따뜻하고 은은한 로맨틱 파스텔 그라데이션 */
+      background: linear-gradient(135deg, #fff0f5 0%, #fdfbfb 50%, #f3e7e9 100%);
+      color: #333333;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* 카드 공통 스타일 (부드러운 반투명 글래스모피즘 효과) */
+    .card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      width: 100%;
+      max-width: 440px;
+      padding: 36px 28px;
+      border-radius: 24px;
+      box-shadow: 0 12px 35px rgba(220, 180, 195, 0.25), 0 2px 8px rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      text-align: center;
+      transition: all 0.5s ease;
+    }
+
+    /* 퀴즈 단계 라벨 */
+    .step-indicator {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #b08d98;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .question-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      line-height: 1.5;
+      color: #3f3337;
+      margin-bottom: 24px;
+      word-break: keep-all;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* 선택지 버튼 */
+    .option-btn {
+      width: 100%;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #f0e2e5;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #4a3e42;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    .option-btn:hover {
+      background: #fff5f7;
+      border-color: #f3c2ce;
+      transform: translateY(-1px);
+    }
+
+    .option-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* 오답 에러 메시지 */
+    .error-msg {
+      color: #e06d85;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-top: 18px;
+      min-height: 22px;
+      animation: shake 0.3s ease;
+    }
+
+    /* 통과 화면 */
+    .result-badge {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+      animation: heartBeat 1.5s infinite;
+    }
+
+    .result-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #4a3e42;
+      line-height: 1.6;
+      margin-bottom: 28px;
+      word-break: keep-all;
+    }
+
+    .primary-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #e5989b 0%, #b5838d 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(181, 131, 141, 0.3);
+      transition: all 0.25s ease;
+    }
+
+    .primary-btn:hover {
+      opacity: 0.93;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(181, 131, 141, 0.4);
+    }
+
+    /* 감성적인 최종 메시지 화면 */
+    .final-container {
+      font-family: 'Gowun Batang', serif;
+      padding: 16px 8px;
+    }
+
+    .msg-line-1 {
+      font-size: 1.28rem;
+      font-weight: 400;
+      color: #4a3e42;
+      line-height: 1.8;
+      opacity: 0;
+      animation: gentleFadeIn 2s ease forwards 0.3s;
+      word-break: keep-all;
+    }
+
+    .msg-line-2 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #8f4f5f;
+      line-height: 1.8;
+      margin-top: 14px;
+      margin-bottom: 36px;
+      opacity: 0;
+      animation: gentleFadeIn 2.2s ease forwards 1.8s;
+      word-break: keep-all;
+    }
+
+    .close-btn {
+      width: 100%;
+      padding: 13px;
+      background: #f8f1f3;
+      color: #8c767c;
+      border: 1px solid #ebd9de;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      opacity: 0;
+      animation: gentleFadeIn 1.5s ease forwards 3.2s;
+      transition: all 0.2s ease;
+      font-family: "Pretendard", sans-serif;
+    }
+
+    .close-btn:hover {
+      background: #f1e2e6;
+      color: #5f484e;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* 애니메이션 */
+    @keyframes gentleFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    @keyframes heartBeat {
+      0% { transform: scale(1); }
+      14% { transform: scale(1.15); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.15); }
+      70% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. 퀴즈 화면 -->
+  <div class="card" id="quiz-card">
+    <div class="step-indicator" id="step-label">Question A / D</div>
+    <div class="question-title" id="question-text"></div>
+    <div class="options" id="options-container"></div>
+    <div class="error-msg" id="error-text"></div>
+  </div>
+
+  <!-- 2. 정답 인증 완료 화면 -->
+  <div class="card hidden" id="passed-card">
+    <div class="result-badge">🌸</div>
+    <div class="result-title">축하합니다!<br>장시은 양임이 입증되었습니다.</div>
+    <button class="primary-btn" id="show-msg-btn">메세지 보기</button>
+  </div>
+
+  <!-- 3. 감성 최종 메시지 화면 -->
+  <div class="card hidden" id="final-card">
+    <div class="final-container">
+      <div class="msg-line-1">내가 좀 많이 좋아하는 것 같아 누나,</div>
+      <div class="msg-line-2">보고 싶어.</div>
+      <button class="close-btn" id="close-btn">닫기</button>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        step: "Question A / D",
+        question: "너와 내가 공백기 이후에 처음으로 목소리를 들으며 대화를 나눈 날은?",
+        correct: 1,
+        options: ["8월 11일", "8월 12일", "8월 13일", "8월 14일", "8월 15일"]
+      },
+      {
+        step: "Question B / D",
+        question: "내가 태어난 날은?",
+        correct: 2,
+        options: ["2004년 12월 25일", "2005년 1월 5일", "2005년 2월 14일", "2005년 3월 20일", "2005년 5월 5일"]
+      },
+      {
+        step: "Question C / D",
+        question: "내가 네게 써준 시의 제목은?",
+        correct: 1,
+        options: ["蒔誾", "時恩", "始恩", "市銀", "柴隱"]
+      },
+      {
+        step: "Question D / D",
+        question: "요즘 너에 대한 내 생각은?",
+        correct: 5,
+        options: ["별 생각 없다.", "고민이 많다.", "마냥 걱정된다.", "심술이 난다.", "많이 보고 싶다."]
+      }
+    ];
+
+    let currentStep = 0;
+
+    const quizCard = document.getElementById("quiz-card");
+    const passedCard = document.getElementById("passed-card");
+    const finalCard = document.getElementById("final-card");
+
+    const stepLabel = document.getElementById("step-label");
+    const questionText = document.getElementById("question-text");
+    const optionsContainer = document.getElementById("options-container");
+    const errorText = document.getElementById("error-text");
+
+    const showMsgBtn = document.getElementById("show-msg-btn");
+    const closeBtn = document.getElementById("close-btn");
+
+    function renderQuestion() {
+      const current = quizData[currentStep];
+      stepLabel.innerText = current.step;
+      questionText.innerText = current.question;
+      errorText.innerText = "";
+      optionsContainer.innerHTML = "";
+
+      current.options.forEach((opt, index) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerText = `${index + 1}번. ${opt}`;
+        btn.onclick = () => handleChoice(index + 1);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function handleChoice(selectedAnswer) {
+      if (selectedAnswer === quizData[currentStep].correct) {
+        currentStep++;
+        if (currentStep < quizData.length) {
+          renderQuestion();
+        } else {
+          quizCard.classList.add("hidden");
+          passedCard.classList.remove("hidden");
+        }
+      } else {
+        errorText.innerText = "오답입니다! 다시 선택하세요!";
+      }
+    }
+
+    showMsgBtn.addEventListener("click", () => {
+      passedCard.classList.add("hidden");
+      finalCard.classList.remove("hidden");
+    });
+
+    closeBtn.addEventListener("click", () => {
+      window.close();
+      finalCard.innerHTML = "<div style='font-family: Gowun Batang, serif; color: #665257; padding: 20px 0; font-size: 1.1rem;'>오늘도 좋은 하루 보내 :)</div>";
+    });
+
+    renderQuestion();
+  </script>
+</body>
+</html>
