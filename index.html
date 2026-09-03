@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>From. 훈련소에서 시은이에게</title>
+  <title>From. 시은이에게</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Pretendard:wght@400;500;600&display=swap" rel="stylesheet">
@@ -249,7 +249,7 @@
     <!-- 2단계: 날짜 선택 캘린더 -->
     <div class="card hidden" id="calendar-card">
       <div class="calendar-header">
-        <h2>군 복무 중 매일 전하는 편지 💌</h2>
+        <h2>매일 전하는 이야기 💌</h2>
         <p>해당 날짜가 되어야 열람할 수 있어요.</p>
       </div>
       <div class="date-grid" id="date-grid"></div>
@@ -258,7 +258,7 @@
     <!-- 3단계: 날짜별 운세 & 편지 & 음성 보기 -->
     <div class="card hidden" id="letter-card">
       <div class="letter-view">
-        <div class="letter-date" id="view-date">2026. 09. 07</div>
+        <div class="letter-date" id="view-date">2026. 09. 04</div>
         <div class="fortune-box">
           <div class="fortune-title">🔮 오늘의 운세</div>
           <div class="fortune-content" id="view-fortune">운세 내용</div>
@@ -305,9 +305,12 @@
       }
     ];
 
-    /* 2. 날짜별 운세 및 편지 데이터 (2026-09-07 ~ 2026-10-15) 
-       * 여기에 매일의 운세와 전하고 싶은 글을 채워 넣으시면 됩니다. */
+    /* 2. 날짜별 운세 및 편지 데이터 (오늘인 2026-09-04 추가됨) */
     const dailyData = {
+      "2026-09-04": {
+        fortune: "소중한 사람과의 마음이 닿는 날. 작은 준비와 진심이 큰 감동으로 이어집니다.",
+        message: "시은아 안녕! 테스트용 첫 편지야.\n이 페이지가 잘 보이고 목소리도 잘 들렸으면 좋겠네.\n군대 가기 전까지 남은 시간도, 다녀오는 시간도 늘 네 곁에 있을게."
+      },
       "2026-09-07": {
         fortune: "새로운 시작의 날. 마음이 조금 복잡할 수 있으나 차분함을 유지하면 편안해집니다.",
         message: "시은아 안녕, 오늘 내가 입대하는 날이네.\n처음엔 서로 낯설고 허전하겠지만 금방 적응하고 올 테니까 너무 걱정하지 마.\n오늘 하루도 밥 잘 챙겨 먹고 좋은 하루 보내 누나."
@@ -315,12 +318,7 @@
       "2026-09-08": {
         fortune: "주변 사람들과의 따뜻한 대화가 마음에 큰 위로가 되는 하루입니다.",
         message: "훈련소의 둘째 날 아침이야.\n아침에 눈 뜨자마자 누나 생각이 제일 먼저 나더라.\n오늘 날씨는 어떤지, 감기는 안 걸렸는지 궁금해."
-      },
-      "2026-09-09": {
-        fortune: "작은 행운이 깃드는 날. 예상치 못한 곳에서 웃음을 찾게 됩니다.",
-        message: "오늘도 훈련 열심히 받고 올게.\n누나도 오늘 사소한 일에 활짝 웃는 일들이 가득했으면 좋겠다."
       }
-      /* 필요에 따라 10월 15일까지 같은 형식으로 추가 */
     };
 
     let currentStep = 0;
@@ -374,11 +372,12 @@
       }
     }
 
-    // 날짜 생성 (9월 7일 ~ 10월 15일)
+    // 날짜 생성 (시작일을 9월 4일로 설정)
     function renderCalendar() {
       dateGrid.innerHTML = "";
-      const startDate = new Date(2026, 8, 7); // 9월 7일
-      const endDate = new Date(2026, 9, 15);  // 10월 15일
+      const startDate = new Date(2026, 8, 4); // 9월 4일 시작
+      const endDate = new Date(2026, 9, 15);  // 10월 15일 종료
+      
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -390,7 +389,8 @@
         const dateStr = `${yyyy}-${mm}-${dd}`;
         const displayLabel = `${cur.getMonth() + 1}.${cur.getDate()}`;
 
-        const isLocked = cur > today; // 오늘 날짜 이후는 잠금 처리
+        // 오늘 날짜 이전이거나 오늘은 열람 가능, 내일부터는 잠금
+        const isLocked = cur > today;
 
         const item = document.createElement("div");
         item.className = `date-item ${isLocked ? 'locked' : 'active'}`;
@@ -425,7 +425,7 @@
       viewFortune.innerText = content.fortune;
       viewMessage.innerText = content.message;
 
-      // 오디오 파일 경로 세팅 (audio/2026-09-07.mp3 형태)
+      // audio/2026-09-04.mp3 형식으로 불러옴
       viewAudio.src = `audio/${dateKey}.mp3`;
       viewAudio.load();
     }
